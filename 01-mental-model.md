@@ -20,7 +20,7 @@ DeepSeek Harness 的官方入门线（[develop/basic](https://deepseek-harness.g
 - 用 `defineTool` 定义过带参数 schema 与渲染逻辑的工具。
 - 见过 `cordis.yml` / `cordis.patch.yml` / `--patch`，知道 profile 与 bundle 各是什么。
 
-如果这些还不熟，请先读配套的[入门教材](https://github.com/John-Shao/dsh-beginner-tutorial)或官方入门线。本书不会重讲这些概念，但会在需要时给出准确锚点。
+如果这些还不熟，请先读配套的[入门教程](https://github.com/John-Shao/dsh-beginner-tutorial)或官方入门线。本书不会重讲这些概念，但会在需要时给出准确锚点。
 
 ## 1.2 四层模型
 
@@ -152,5 +152,5 @@ pnpm run gen-doc-graphs && git diff --stat docs/
 **延伸阅读**
 
 - 官方 [概念参考](https://deepseek-harness.github.io/deepseek-harness/reference/)、[Cordis 速览](https://deepseek-harness.github.io/deepseek-harness/reference/cordis-primer)、[能力接缝](https://deepseek-harness.github.io/deepseek-harness/reference/capability-seams)
-- 配套入门教材：[dsh-beginner-tutorial](https://github.com/John-Shao/dsh-beginner-tutorial)
+- 配套入门教程：[dsh-beginner-tutorial](https://github.com/John-Shao/dsh-beginner-tutorial)
 - 下一章：[Cordis 内核：插件、注册表与 Fiber 生命周期](02-cordis-kernel.md)

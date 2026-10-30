@@ -1,10 +1,10 @@
-# DeepSeek Harness 高级教材
+# DeepSeek Harness 高级教程
 
 内部结构 · 工作原理 · 定制与扩展开发。
 
-本教材基于 DeepSeek Harness `0.2.2-alpha.2`（源码提交 `f3803c9`（2026-10-28））、Cordis 内核 `4.0.6-alpha.1` 编写，内容同时对照[官方文档](https://deepseek-harness.github.io/deepseek-harness/)与本地源码，所有机制性断言都标注了源码路径与行号。DeepSeek Harness 处于开发者预览阶段，接口和配置会继续变化；读到与当前代码不一致的地方时，以你检出的版本和仓库生成目录为准。
+本教程基于 DeepSeek Harness `0.2.2-alpha.2`（源码提交 `f3803c9`（2026-10-28））、Cordis 内核 `4.0.6-alpha.1` 编写，内容同时对照[官方文档](https://deepseek-harness.github.io/deepseek-harness/)与本地源码，所有机制性断言都标注了源码路径与行号。DeepSeek Harness 处于开发者预览阶段，接口和配置会继续变化；读到与当前代码不一致的地方时，以你检出的版本和仓库生成目录为准。
 
-![DeepSeek Harness 高级教材封面](images/cover.png)
+![DeepSeek Harness 高级教程封面](images/cover.png)
 
 ---
 
@@ -13,9 +13,9 @@
 - 已经能启动 dsh、写过导出 `apply` 的插件、用 `defineTool` 定义过工具。
 - 想知道**换掉框架的一个零件**需要知道什么，而不只是在它旁边加一个零件。
 - 需要为团队做架构评审、性能诊断、持久化演进或扩展规范的人。
-- 读过[配套入门教材](https://github.com/John-Shao/dsh-beginner-tutorial)或官方 [develop/basic](https://deepseek-harness.github.io/deepseek-harness/develop/basic/) 线的人。
+- 读过[配套入门教程](https://github.com/John-Shao/dsh-beginner-tutorial)或官方 [develop/basic](https://deepseek-harness.github.io/deepseek-harness/develop/basic/) 线的人。
 
-本书**不**重讲：如何安装、如何配置模型密钥、插件的基本写法。这些在入门教材与官方文档里更合适。
+本书**不**重讲：如何安装、如何配置模型密钥、插件的基本写法。这些在入门教程与官方文档里更合适。
 
 ## 学完能做什么
 
@@ -182,4 +182,4 @@ node render.mjs fig-part2       # 只渲染某一文件的图
 
 ## 许可与致谢
 
-DeepSeek Harness 以 MIT 许可证发布。本教材引用的文档、代码与命令均来自该项目；引用时请保留原始仓库的许可与署名。
+DeepSeek Harness 以 MIT 许可证发布。本教程引用的文档、代码与命令均来自该项目；引用时请保留原始仓库的许可与署名。

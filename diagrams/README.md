@@ -1,6 +1,6 @@
 # 插图源文件
 
-本目录保存《DeepSeek Harness 高级教材》插图的 HTML 源与渲染脚本。读者可以忽略；维护者修改后重新渲染 `../images/*.png`。
+本目录保存《DeepSeek Harness 高级教程》插图的 HTML 源与渲染脚本。读者可以忽略；维护者修改后重新渲染 `../images/*.png`。
 
 ## 文件
 
@@ -52,4 +52,4 @@ CHROMIUM_PATH=C:/Users/<you>/AppData/Local/ms-playwright/chromium_headless_shell
 1. 在对应 `fig-partN.html` 里加一个 `<section class="figure" id="fig-<name>">`。
 2. 运行 `node render.mjs fig-partN`，确认 `../images/<name>.png` 生成并**打开看一眼**：绝对定位的图很容易重叠。
 3. 在章节正文插入 `![中文说明](images/<name>.png)` 与一行图注 `*图 N-1 · …*`。
-4. 更新教材 README 的"图表索引"。
+4. 更新教程 README 的"图表索引"。
