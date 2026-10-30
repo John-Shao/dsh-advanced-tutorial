@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><title>高级教材插图 · 第二部分</title></head><body>
+
+<!-- ─────────── 图 6-1 turn 时序 ─────────── -->
+<section class="figure" id="fig-turn-step-seq"><div class="canvas plain">
+  <div class="kicker">AGENT LOOP · SEQUENCE</div>
+  <h2>一次 turn 的完整时序</h2>
+  <div class="sub">实线 = 耐久会话事件（可重放） · 虚线 = live 扩展点（进程内） · 琥珀 = 耐久但仅日志</div>
+
+  <div class="actor" style="left:36px;top:140px;width:128px">用户 / SDK</div>
+  <div class="actor" style="left:184px;top:140px;width:128px">inbox</div>
+  <div class="actor" style="left:332px;top:140px;width:128px">驱动器 loop</div>
+  <div class="actor" style="left:480px;top:140px;width:128px">ctx.systemPrompt</div>
+  <div class="actor" style="left:628px;top:140px;width:128px">ctx.llm</div>
+  <div class="actor" style="left:776px;top:140px;width:128px">ctx.tools</div>
+  <div class="actor" style="left:924px;top:140px;width:128px">会话日志</div>
+
+  <div class="life" style="left:99px;top:176px;height:404px"></div>
+  <div class="life" style="left:247px;top:176px;height:404px"></div>
+  <div class="life" style="left:395px;top:176px;height:404px"></div>
+  <div class="life" style="left:543px;top:176px;height:404px"></div>
+  <div class="life" style="left:691px;top:176px;height:404px"></div>
+  <div class="life" style="left:839px;top:176px;height:404px"></div>
+  <div class="life" style="left:987px;top:176px;height:404px"></div>
+
+  <div class="msg" style="left:100px;top:196px;width:147px"></div>
+  <div class="mlabel" style="left:104px;top:182px">followup / steer / inject</div>
+
+  <div class="msg" style="left:248px;top:224px;width:147px"></div>
+  <div class="mlabel" style="left:252px;top:210px">turn/start</div>
+
+  <div class="msg live" style="left:248px;top:252px;width:147px"></div>
+  <div class="mlabel" style="left:252px;top:238px">claim + inbox/claimed</div>
+
+  <div class="msg live" style="left:396px;top:280px;width:147px"></div>
+  <div class="mlabel" style="left:400px;top:266px">tools.resolve → assemble</div>
+
+  <div class="msg live left" style="left:249px;top:308px;width:147px"></div>
+  <div class="mlabel" style="left:252px;top:294px"><span class="live">agent/pre-step (wf)</span></div>
+
+  <div class="msg" style="left:396px;top:336px;width:591px"></div>
+  <div class="mlabel" style="left:400px;top:322px">step/start · system/message · user/message</div>
+
+  <div class="msg live" style="left:396px;top:364px;width:295px"></div>
+  <div class="mlabel" style="left:400px;top:350px">prepareCall → stream</div>
+
+  <div class="msg live left" style="left:396px;top:392px;width:296px"></div>
+  <div class="mlabel" style="left:400px;top:378px">assistant-stream chunk*</div>
+
+  <div class="msg" style="left:396px;top:420px;width:591px"></div>
+  <div class="mlabel" style="left:400px;top:406px">assistant/message · request/header（仅日志）</div>
+
+  <div class="msg warn" style="left:396px;top:448px;width:443px"></div>
+  <div class="mlabel" style="left:400px;top:434px">execute → tool/call</div>
+
+  <div class="msg warn left" style="left:396px;top:476px;width:444px"></div>
+  <div class="mlabel" style="left:400px;top:462px">pre-execute (wf) → approval (wf) → post-execute (wf)</div>
+
+  <div class="msg" style="left:396px;top:504px;width:591px"></div>
+  <div class="mlabel" style="left:400px;top:490px">tool/result · step/end · additionalContexts → next-step</div>
+
+  <div class="msg live" style="left:396px;top:532px;width:147px"></div>
+  <div class="mlabel" style="left:400px;top:518px">turn-stopping（serial）→ turn/end</div>
+
+  <div class="fig-no">图 6-1</div>
+</div></section>
+
+<!-- ─────────── 图 7-1 工具管线 ─────────── -->
+<section class="figure" id="fig-tool-pipeline"><div class="canvas">
+  <div class="kicker">TOOL PIPELINE</div>
+  <h2>一次工具调用的六个阶段</h2>
+  <div class="sub">执行器拥有批次与日志；管线拥有策略；两者都不改 loop。</div>
+
+  <div class="node blue center" style="left:40px;top:150px;width:150px"><div class="t">executionMode</div><div class="s">只有精确 true<br>才 parallel</div></div>
+  <div class="node center" style="left:216px;top:150px;width:150px"><div class="t">prepare</div><div class="s">快照参数<br>pre-execute (wf)</div></div>
+  <div class="node center" style="left:392px;top:150px;width:150px"><div class="t">guards</div><div class="s">单调拒绝<br>不可撤销</div></div>
+  <div class="node center" style="left:568px;top:150px;width:150px"><div class="t">dispatch</div><div class="s">tools/execute (wf)<br>包工具体</div></div>
+  <div class="node center" style="left:744px;top:150px;width:150px"><div class="t">complete</div><div class="s">projectContent<br>post-execute (wf)</div></div>
+  <div class="node teal center" style="left:920px;top:150px;width:140px"><div class="t">finish</div><div class="s">finalizeContent<br>tools/result</div></div>
+
+  <div class="arrow h" style="left:190px;top:196px;width:26px"></div>
+  <div class="arrow h" style="left:366px;top:196px;width:26px"></div>
+  <div class="arrow h" style="left:542px;top:196px;width:26px"></div>
+  <div class="arrow h" style="left:718px;top:196px;width:26px"></div>
+  <div class="arrow h" style="left:894px;top:196px;width:26px"></div>
+
+  <div class="node amber center" style="left:216px;top:286px;width:150px"><div class="t">ask → ctx.approval</div><div class="s">无服务 / 无 agent<br>降级为 deny</div></div>
+  <div class="arrow v" style="left:291px;top:240px;height:46px"></div>
+  <div class="node red center" style="left:392px;top:286px;width:150px"><div class="t">denied</div><div class="s">工具体被跳过<br>仍走 project/finish</div></div>
+  <div class="arrow h" style="left:366px;top:330px;width:26px"></div>
+  <div class="node center" style="left:568px;top:286px;width:150px"><div class="t">fs 意图门</div><div class="s">write-intent<br>edit-intent</div></div>
+  <div class="node violet center" style="left:744px;top:286px;width:150px"><div class="t">tool-owned 事件</div><div class="s">todo/write<br>fs/observed</div></div>
+
+  <div class="lane" style="left:40px;top:404px;width:1020px;height:120px"><div class="lane-t">批次调度 executeToolBatch · 由执行器拥有</div>
+    <div class="node tight" style="left:20px;top:26px;width:228px"><div class="t">每组前重新分类</div><div class="s">参数可能已被 pre-execute 改写</div></div>
+    <div class="node tight" style="left:268px;top:26px;width:228px"><div class="t">exclusive = 单调用屏障</div><div class="s">parallel 组切到末尾</div></div>
+    <div class="node tight" style="left:516px;top:26px;width:252px"><div class="t">commitReady 头阻塞</div><div class="s">按模型顺序落 tool/result<br>先完成不能先落</div></div>
+    <div class="node tight" style="left:788px;top:26px;width:212px"><div class="t">落盘条件</div><div class="s">仅当 loop 传了 log<br>BatchSettlement 才落</div></div>
+  </div>
+
+  <div class="note blue" style="left:40px;top:540px;width:1020px">
+    <b>三层分工</b> · 注册表 <span class="mono">ctx.tools</span> 管可见性（register / restrict / guard）· 执行器 native|ptc 管批次与日志 · 共享管线管权限、hook、沙箱、fs 守卫、结果改写与终值观察
+  </div>
+  <div class="fig-no">图 7-1</div>
+</div></section>
+
+<!-- ─────────── 图 8-1 日志与 surface ─────────── -->
+<section class="figure" id="fig-log-surface"><div class="canvas">
+  <div class="kicker">SESSION LOG</div>
+  <h2>只增日志 → surface → 派生历史</h2>
+  <div class="sub">每次模型请求都是日志前缀的纯函数。</div>
+
+  <div class="lane" style="left:40px;top:130px;width:400px;height:400px"><div class="lane-t">log: SessionEvent[]（只增、深冻结）</div>
+    <div class="node tight" style="left:20px;top:26px;width:360px"><div class="t mono">turn/start · step/start</div><div class="s">耐久</div></div>
+    <div class="node tight blue" style="left:20px;top:80px;width:360px"><div class="t mono">system/message · user/message</div><div class="s">surface 节点 · 带 surfaceOp</div></div>
+    <div class="node tight amber" style="left:20px;top:134px;width:360px"><div class="t mono">request/header · request/context</div><div class="s">耐久但<b>仅日志</b> · 不进历史</div></div>
+    <div class="node tight blue" style="left:20px;top:188px;width:360px"><div class="t mono">assistant/message</div><div class="s">内嵌紧凑计时流 · 禁止 sourceEventSeqs</div></div>
+    <div class="node tight amber" style="left:20px;top:242px;width:360px"><div class="t mono">assistant/attempt</div><div class="s">失败/取消尝试 · 仅日志</div></div>
+    <div class="node tight blue" style="left:20px;top:296px;width:360px"><div class="t mono">tool/result</div><div class="s">surface 节点（第五种）</div></div>
+    <div class="node tight ghost" style="left:20px;top:350px;width:360px"><div class="t mono">compaction/* · plugin:*</div><div class="s">仅日志 / 实验 ignorable</div></div>
+  </div>
+
+  <div class="arrow h" style="left:444px;top:300px;width:52px"></div>
+  <div class="alabel" style="left:436px;top:266px">surface.nodes</div>
+
+  <div class="lane teal" style="left:500px;top:130px;width:260px;height:400px"><div class="lane-t">surface（消息产生型）</div>
+    <div class="node tight center" style="left:20px;top:30px;width:220px"><div class="t">节点 0</div><div class="s">system 槽位受保护</div></div>
+    <div class="node tight center" style="left:20px;top:92px;width:220px"><div class="t mono">append</div><div class="s">正常追加</div></div>
+    <div class="node tight center" style="left:20px;top:158px;width:220px"><div class="t mono">replace{startSeq,endSeq}</div><div class="s">压缩与剪枝用它收缩</div></div>
+    <div class="node tight center" style="left:20px;top:236px;width:220px"><div class="t">contentGeneration</div><div class="s">变了才整体重建缓存</div></div>
+    <div class="s" style="position:absolute;left:20px;top:312px;width:220px;font-size:11.5px;color:#475569">只有这五种能带 surfaceOp：<br><span class="mono">system/ developer/ user/ assistant/message · tool/result</span></div>
+  </div>
+
+  <div class="arrow h" style="left:764px;top:300px;width:52px"></div>
+  <div class="alabel" style="left:752px;top:266px">deriveMessages()</div>
+
+  <div class="lane violet" style="left:820px;top:130px;width:240px;height:400px"><div class="lane-t">模型历史</div>
+    <div class="node tight center" style="left:20px;top:30px;width:200px"><div class="t">Message[]</div><div class="s">新数组 · 元素共享 · 深冻结</div></div>
+    <div class="node tight center" style="left:20px;top:96px;width:200px"><div class="t">尾增长 O(新节点)</div><div class="s">纯追加不重算</div></div>
+    <div class="node tight center" style="left:20px;top:166px;width:200px"><div class="t">空 assistant 被跳过</div><div class="s">max-tokens 只持有 usage</div></div>
+    <div class="node tight center" style="left:20px;top:240px;width:200px"><div class="t">冻结进请求</div><div class="s mono">无 system 字段</div></div>
+  </div>
+
+  <div class="note red" style="left:40px;top:548px;width:1020px">
+    <b>写路径</b> · publicationEntry() 要求 store 成员资格且 session/created 已完成 → snapshotJsonValue() 单次遍历防有状态 getter → deepFreeze → commit()：监听器快照在 push 前解析、回调在 push 后执行、单个观察者失败被隔离
+  </div>
+  <div class="fig-no">图 8-1</div>
+</div></section>
+
+<!-- ─────────── 图 9-1 压缩三层 ─────────── -->
+<section class="figure" id="fig-compaction-flow"><div class="canvas">
+  <div class="kicker">CONTEXT BUDGET</div>
+  <h2>预算治理的三层</h2>
+  <div class="sub">先免模型剪枝，再摘要压缩；两者都留下可重放的影子价格。</div>
+
+  <div class="node blue" style="left:40px;top:140px;width:230px"><div class="t">① 计量 tokenMeter</div><div class="s mono">TokenMeasurement{ logRevision,<br>baseline, surfaceDeltaTokens,<br>totalTokens, surfaceTokens, nodes }</div></div>
+  <div class="note" style="left:40px;top:284px;width:230px">provider usage 只在信封一致且不低于 route-priced 锚点时复用 —— <b>宁高不低</b></div>
+
+  <div class="arrow h" style="left:274px;top:196px;width:40px"></div>
+
+  <div class="node" style="left:318px;top:140px;width:230px"><div class="t">② 触发</div><div class="s mono">pressure · 在 pre-step<br>context-overflow · 在 request-error</div></div>
+  <div class="note amber" style="left:318px;top:284px;width:230px">默认阈值 <span class="mono">floor(min(W×0.8, W−O−B))</span>，B 默认 65536</div>
+
+  <div class="arrow h" style="left:552px;top:196px;width:40px"></div>
+
+  <div class="node teal" style="left:596px;top:140px;width:230px"><div class="t">③ 收缩</div><div class="s">先 <b>model-free 剪枝</b><br>再 <b>摘要压缩</b></div></div>
+  <div class="note" style="left:596px;top:284px;width:230px">剪枝不发模型请求：超限结果 → head + 标记 + tail（8192/4096/1024 码点）</div>
+
+  <div class="arrow h" style="left:830px;top:196px;width:40px"></div>
+
+  <div class="node violet" style="left:874px;top:140px;width:186px"><div class="t">耐久痕迹</div><div class="s mono">compaction/prune<br>compaction/start…end<br>user/message replace</div></div>
+  <div class="note red" style="left:874px;top:284px;width:186px">崩溃留下<b>可见孤儿锁</b>，而不是谎报完成</div>
+
+  <div class="lane" style="left:40px;top:372px;width:1020px;height:150px"><div class="lane-t">另外两条收缩线</div>
+    <div class="node tight" style="left:20px;top:26px;width:470px"><div class="t">spill：把"太大"变成引用</div><div class="s">tools/post-execute 消费者 · 文本与图片共享 maxInlineTokens · <b>保存失败绝不把成功调用变成 isError</b></div></div>
+    <div class="node tight" style="left:520px;top:26px;width:480px"><div class="t">runtime-context：快照语义，不是逐条累积</div><div class="s">只保留一份；被 replace 命中保留 seq 时置空 → 模型看到"当前无此上下文"而非陈旧值</div></div>
+    <div class="s" style="position:absolute;left:20px;top:96px;font-size:11.5px;color:#475569;width:980px">摘要调用还逐字节重放节点 0 的 system/message + 最后路由 tools + 被压缩区消息，让压缩本身也吃到 provider 缓存；恢复运行在同一 step 内，<b>重试不重复装配、不重复 pre-step、不重复准入用户</b>。</div>
+  </div>
+  <div class="fig-no">图 9-1</div>
+</div></section>
+
+<!-- ─────────── 图 10-1 仓库地形 ─────────── -->
+<section class="figure" id="fig-repo-groups"><div class="canvas">
+  <div class="kicker">REPO ANATOMY</div>
+  <h2>仓库地形与解析边界</h2>
+  <div class="sub">一致性不靠约定俗成，靠生成物与闸门。</div>
+
+  <div class="lane blue" style="left:40px;top:126px;width:500px;height:250px"><div class="lane-t">packages/&lt;group&gt;/&lt;module&gt;</div>
+    <div class="node tight" style="left:18px;top:26px;width:228px"><div class="t">core · session · llm</div><div class="s">机制层</div></div>
+    <div class="node tight" style="left:254px;top:26px;width:228px"><div class="t">boot · bundle · api · sdk</div><div class="s">装配与边界</div></div>
+    <div class="node tight" style="left:18px;top:92px;width:228px"><div class="t">fs · shell · sandbox · ssh</div><div class="s">执行世界</div></div>
+    <div class="node tight" style="left:254px;top:92px;width:228px"><div class="t">client · host · web · mcp</div><div class="s">接入面</div></div>
+    <div class="node tight ghost" style="left:18px;top:158px;width:464px"><div class="t">experimental/&lt;module&gt;</div><div class="s">release 包不得依赖它；CI 查传递安装与运行时 import</div></div>
+  </div>
+
+  <div class="lane teal" style="left:556px;top:126px;width:238px;height:250px"><div class="lane-t">vendor/</div>
+    <div class="node tight center" style="left:18px;top:28px;width:202px"><div class="t">cordis</div><div class="s">9 文件 · 约 2700 行</div></div>
+    <div class="node tight center" style="left:18px;top:88px;width:202px"><div class="t">loader · hmr · group</div><div class="s">include · timer</div></div>
+    <div class="node tight center" style="left:18px;top:148px;width:202px"><div class="t">schemastery</div><div class="s">cosmokit · logger-console</div></div>
+    <div class="s" style="position:absolute;left:18px;top:206px;width:202px;font-size:11px;color:#64748B">分叉记录见 vendor/README.md</div>
+  </div>
+
+  <div class="lane amber" style="left:810px;top:126px;width:250px;height:250px"><div class="lane-t">apps/ · scripts/ · docs/</div>
+    <div class="node tight center" style="left:18px;top:28px;width:214px"><div class="t">apps/cli</div><div class="s">唯一受支持的 Node 应用入口</div></div>
+    <div class="node tight center" style="left:18px;top:88px;width:214px"><div class="t">apps/web · desktop</div><div class="s">Vite 壳 / Electron 载体</div></div>
+    <div class="node tight center" style="left:18px;top:148px;width:214px"><div class="t">scripts/gen-*.ts</div><div class="s">生成物 + verify-* 闸门</div></div>
+    <div class="s" style="position:absolute;left:18px;top:206px;width:214px;font-size:11px;color:#64748B">docs 双语三件套 · 一事实一家</div>
+  </div>
+
+  <div class="lane" style="left:40px;top:394px;width:1020px;height:112px"><div class="lane-t">源面 vs 产物：一条硬边界</div>
+    <div class="node tight" style="left:20px;top:24px;width:300px"><div class="t mono">src/ ← 测试解析到这里</div><div class="s">vite-tsconfig-paths 只指向 tsconfig.base.json</div></div>
+    <div class="node tight" style="left:340px;top:24px;width:300px"><div class="t mono">lib/ ← 构建产物</div><div class="s">typert.host.js · typert.remote-client.js</div></div>
+    <div class="node tight red" style="left:660px;top:24px;width:340px"><div class="t">源面测试永不走 package exports</div><div class="s">改了 src 没重建 lib 也不会被测试掩盖</div></div>
+  </div>
+
+  <div class="note blue" style="left:40px;top:522px;width:1020px">
+    <b>四套测试池</b> · vitest.config（源面单测，thread-safe + process-bound 双池）· e2e（真 API，无 key 自跳）· snapshot（record/refresh 强制串行，只有 record 读 .env）· bench（benchmarks/**，scaling-report）&nbsp;&nbsp;<b>CI 闸门是 test:coverage 的每文件 100%，不是 test</b>
+  </div>
+  <div class="fig-no">图 10-1</div>
+</div></section>
+
+</body></html>

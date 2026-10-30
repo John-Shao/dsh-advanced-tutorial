@@ -1,0 +1,145 @@
+/* DeepSeek Harness 高级教材 · 插图共享样式
+   画布固定 1100x640（封面 1100x620），截图 deviceScaleFactor 1.5。 */
+:root {
+  --ink:#0F172A; --muted:#64748B; --line:#CBD5E1;
+  --blue:#4D6BFE; --blue-dark:#3730A3; --blue-weak:#EEF2FF;
+  --teal:#0F766E; --teal-weak:#ECFDF5;
+  --amber:#B45309; --amber-weak:#FFFBEB;
+  --red:#B91C1C; --red-weak:#FEF2F2;
+  --violet:#6D28D9; --violet-weak:#F5F3FF;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; background:#fff; }
+body { font-family:"Microsoft YaHei","Noto Sans SC","PingFang SC",sans-serif; -webkit-font-smoothing:antialiased; }
+.figure { width:1100px; height:640px; overflow:hidden; }
+.figure > svg { display:block; }
+.canvas {
+  position:relative; width:1100px; height:640px; overflow:hidden;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(148,163,184,.16) 1px, transparent 0) 0 0/24px 24px,
+    linear-gradient(135deg,#ffffff 0%,#F8FAFC 60%,#EEF2FF 100%);
+}
+.canvas.dark { background:linear-gradient(135deg,#0B1220 0%,#111C33 48%,#1E1B4B 100%); color:#E2E8F0; }
+.canvas.plain { background:linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%); }
+.kicker { position:absolute; left:48px; top:30px; font-size:12px; letter-spacing:.16em; font-weight:700; color:var(--blue); }
+.canvas.dark .kicker { color:#A5B4FC; }
+h2 { position:absolute; left:48px; top:52px; margin:0; font-size:29px; line-height:1.2; color:var(--ink); letter-spacing:-.02em; }
+.canvas.dark h2 { color:#F8FAFC; }
+.sub { position:absolute; left:48px; top:94px; font-size:13.5px; color:var(--muted); }
+.fig-no { position:absolute; right:40px; bottom:18px; font-size:11.5px; color:#94A3B8; letter-spacing:.08em; }
+.mono { font-family:Consolas,"Cascadia Code",monospace; }
+
+/* 节点 */
+.node { position:absolute; padding:12px 14px; border-radius:14px; background:#fff; border:1.5px solid var(--line); box-shadow:0 8px 20px rgba(15,23,42,.06); }
+.node .t { font-size:15.5px; font-weight:700; color:var(--ink); line-height:1.25; }
+.node .s { margin-top:4px; font-size:12.3px; color:var(--muted); line-height:1.45; }
+.node .tag { display:inline-block; margin-top:7px; padding:2px 7px; border-radius:999px; font-size:10.5px; font-weight:700; letter-spacing:.04em; }
+.node.blue { background:linear-gradient(180deg,#fff,var(--blue-weak)); border-color:#C7D2FE; }
+.node.blue .t { color:var(--blue-dark); }
+.node.teal { background:linear-gradient(180deg,#fff,var(--teal-weak)); border-color:#99F6E4; }
+.node.teal .t { color:#115E59; }
+.node.amber { background:linear-gradient(180deg,#fff,var(--amber-weak)); border-color:#FDE68A; }
+.node.amber .t { color:#92400E; }
+.node.violet { background:linear-gradient(180deg,#fff,var(--violet-weak)); border-color:#DDD6FE; }
+.node.violet .t { color:#5B21B6; }
+.node.red { background:linear-gradient(180deg,#fff,var(--red-weak)); border-color:#FECACA; }
+.node.red .t { color:#991B1B; }
+.node.slate { background:#F8FAFC; border-color:#E2E8F0; }
+.node.ghost { background:rgba(255,255,255,.72); border-style:dashed; }
+.node.center { text-align:center; }
+.node.tight { padding:9px 11px; }
+.node.tight .t { font-size:13.5px; }
+.node.tight .s { font-size:11.5px; }
+
+/* 泳道 / 分组框 */
+.lane { position:absolute; border-radius:16px; border:1.5px dashed #CBD5E1; background:rgba(255,255,255,.55); }
+.lane .lane-t { position:absolute; left:14px; top:-11px; padding:1px 9px; border-radius:999px; background:#fff; border:1px solid var(--line); font-size:11.5px; font-weight:700; color:#475569; letter-spacing:.04em; }
+.lane.blue { border-color:#A5B4FC; background:rgba(238,242,255,.6); } .lane.blue .lane-t { color:var(--blue-dark); border-color:#C7D2FE; }
+.lane.teal { border-color:#5EEAD4; background:rgba(236,253,245,.6); } .lane.teal .lane-t { color:#115E59; border-color:#99F6E4; }
+.lane.amber { border-color:#FCD34D; background:rgba(255,251,235,.7); } .lane.amber .lane-t { color:#92400E; border-color:#FDE68A; }
+.lane.violet { border-color:#C4B5FD; background:rgba(245,243,255,.6); } .lane.violet .lane-t { color:#5B21B6; border-color:#DDD6FE; }
+
+/* 胶囊 */
+.pill { display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border-radius:999px; font-size:11px; font-weight:700; }
+.pill.blue { background:var(--blue-weak); color:var(--blue-dark); }
+.pill.teal { background:var(--teal-weak); color:#115E59; }
+.pill.amber { background:var(--amber-weak); color:#92400E; }
+.pill.red { background:var(--red-weak); color:#991B1B; }
+.pill.violet { background:var(--violet-weak); color:#5B21B6; }
+.pill.slate { background:#F1F5F9; color:#475569; }
+
+/* 箭头 */
+.arrow { position:absolute; background:#94A3B8; }
+.arrow.h { height:2px; }
+.arrow.h::after { content:''; position:absolute; right:-1px; top:-4.5px; border-left:9px solid #94A3B8; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; }
+.arrow.v { width:2px; }
+.arrow.v::after { content:''; position:absolute; bottom:-1px; left:-4.5px; border-top:9px solid #94A3B8; border-left:5.5px solid transparent; border-right:5.5px solid transparent; }
+.arrow.left::after { right:auto; left:-1px; top:-4.5px; border-left:none; border-right:9px solid #94A3B8; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; }
+.arrow.up::after { bottom:auto; top:-1px; left:-4.5px; border-top:none; border-bottom:9px solid #94A3B8; border-left:5.5px solid transparent; border-right:5.5px solid transparent; }
+.arrow.dashed { background:repeating-linear-gradient(90deg,#94A3B8 0 6px,transparent 6px 11px); }
+.arrow.v.dashed { background:repeating-linear-gradient(180deg,#94A3B8 0 6px,transparent 6px 11px); }
+.arrow.blue { background:#6366F1; } .arrow.blue::after { border-left-color:#6366F1; }
+.arrow.blue.left::after { border-right-color:#6366F1; } .arrow.blue.up::after { border-bottom-color:#6366F1; }
+.arrow.teal { background:#0D9488; } .arrow.teal::after { border-left-color:#0D9488; }
+.arrow.amber { background:#D97706; } .arrow.amber::after { border-left-color:#D97706; }
+.arrow.violet { background:#7C3AED; } .arrow.violet::after { border-left-color:#7C3AED; }
+.alabel { position:absolute; padding:2px 6px; border-radius:5px; background:#fff; color:#475569; font-size:11px; font-weight:600; white-space:nowrap; border:1px solid #E2E8F0; }
+
+/* 代码块 */
+.code { position:absolute; padding:13px 15px; border-radius:12px; background:#0F172A; color:#E2E8F0; font-family:Consolas,"Cascadia Code",monospace; font-size:12.2px; line-height:1.6; box-shadow:0 10px 24px rgba(15,23,42,.18); white-space:pre; }
+.code.sm { font-size:11.2px; line-height:1.55; padding:11px 13px; }
+.code .k { color:#93C5FD; }
+.code .s { color:#86EFAC; }
+.code .c { color:#64748B; }
+.code .f { color:#FDE68A; }
+.code .p { color:#C4B5FD; }
+.code .n { color:#F9A8D4; }
+
+/* 注释卡 */
+.note { position:absolute; padding:10px 13px; border-radius:12px; background:#fff; border:1px solid var(--line); box-shadow:0 6px 16px rgba(15,23,42,.05); font-size:12.3px; color:#475569; line-height:1.55; }
+.note b { color:var(--ink); }
+.note.blue { background:var(--blue-weak); border-color:#C7D2FE; }
+.note.amber { background:var(--amber-weak); border-color:#FDE68A; }
+.note.red { background:var(--red-weak); border-color:#FECACA; }
+.note.teal { background:var(--teal-weak); border-color:#99F6E4; }
+.note.violet { background:var(--violet-weak); border-color:#DDD6FE; }
+
+/* 表格 */
+table.tbl { position:absolute; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 8px 22px rgba(15,23,42,.07); font-size:12.2px; }
+table.tbl th { background:#1E293B; color:#E2E8F0; font-weight:700; text-align:left; padding:8px 11px; font-size:11.6px; letter-spacing:.02em; }
+table.tbl td { padding:7px 11px; border-top:1px solid #E2E8F0; color:#334155; vertical-align:top; line-height:1.4; }
+table.tbl tr:nth-child(even) td { background:#F8FAFC; }
+table.tbl td code { font-family:Consolas,monospace; font-size:11.6px; color:var(--blue-dark); }
+table.tbl .hi { color:#92400E; font-weight:700; }
+
+/* 序列图 */
+.seq { position:absolute; left:0; top:0; }
+.actor { position:absolute; padding:7px 10px; border-radius:10px; background:#1E293B; color:#E2E8F0; font-size:12px; font-weight:700; text-align:center; }
+.life { position:absolute; width:2px; background:repeating-linear-gradient(180deg,#CBD5E1 0 5px,transparent 5px 10px); }
+.msg { position:absolute; height:2px; background:#4D6BFE; }
+.msg::after { content:''; position:absolute; right:-1px; top:-4.5px; border-left:9px solid #4D6BFE; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; }
+.msg.left::after { right:auto; left:-1px; border-left:none; border-right:9px solid #4D6BFE; }
+.msg.live { background:repeating-linear-gradient(90deg,#94A3B8 0 6px,transparent 6px 11px); }
+.msg.live::after { border-left-color:#94A3B8; }
+.msg.live.left::after { border-left:none; border-right-color:#94A3B8; }
+.msg.warn { background:#D97706; }
+.msg.warn::after { border-left-color:#D97706; }
+.msg.warn.left::after { border-left:none; border-right-color:#D97706; }
+.mlabel { position:absolute; font-size:11.2px; color:#334155; font-weight:600; white-space:nowrap; }
+.mlabel .dur { color:#B45309; }
+.mlabel .live { color:#3730A3; }
+
+/* 层级堆叠 */
+.strata { position:absolute; }
+.stratum { border-radius:10px; padding:8px 12px; margin-bottom:7px; background:#fff; border:1.5px solid var(--line); box-shadow:0 4px 12px rgba(15,23,42,.05); }
+.stratum .st { font-size:13.5px; font-weight:700; color:var(--ink); }
+.stratum .ss { font-size:11.6px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.stratum.l1 { background:linear-gradient(90deg,#EEF2FF,#fff); border-color:#C7D2FE; }
+.stratum.l2 { background:linear-gradient(90deg,#ECFDF5,#fff); border-color:#99F6E4; }
+.stratum.l3 { background:linear-gradient(90deg,#FFFBEB,#fff); border-color:#FDE68A; }
+.stratum.l4 { background:linear-gradient(90deg,#F5F3FF,#fff); border-color:#DDD6FE; }
+.stratum.l5 { background:linear-gradient(90deg,#FEF2F2,#fff); border-color:#FECACA; }
+
+/* 步骤序号 */
+.step-n { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:#4D6BFE; color:#fff; font-size:11px; font-weight:800; margin-right:6px; }
+.step-n.teal { background:#0D9488; } .step-n.amber { background:#D97706; } .step-n.violet { background:#7C3AED; } .step-n.red { background:#DC2626; }

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><title>高级教材插图 · 第四部分</title></head><body>
+
+<!-- ─────────── 封面 ─────────── -->
+<section class="figure" id="fig-cover"><div class="canvas dark">
+  <div class="kicker" style="color:#A5B4FC">DEEPSEEK HARNESS · ADVANCED · DEVELOPER PREVIEW</div>
+  <div style="position:absolute;left:60px;top:118px;width:600px">
+    <div style="font-size:62px;line-height:1.04;font-weight:800;color:#F8FAFC;letter-spacing:-.045em">DeepSeek<br><span style="color:#A5B4FC">Harness</span></div>
+    <div style="margin-top:16px;font-size:34px;font-weight:700;color:#E2E8F0">高级教材</div>
+    <div style="margin-top:16px;font-size:16.5px;line-height:1.75;color:#94A3B8;width:490px">内部结构 · 工作原理 · 定制与扩展开发。带行号的机制解释，与官方文档互补。</div>
+    <div style="margin-top:26px;display:flex;gap:10px;flex-wrap:wrap">
+      <span class="pill" style="background:rgba(165,180,252,.14);color:#C7D2FE">0.2.2-alpha.2</span>
+      <span class="pill" style="background:rgba(45,212,191,.12);color:#99F6E4">19 章 + 3 附录</span>
+      <span class="pill" style="background:rgba(251,191,36,.12);color:#FDE68A">Cordis 4.0.6-alpha.1</span>
+    </div>
+  </div>
+  <div style="position:absolute;right:56px;top:120px;width:380px">
+    <div class="node tight" style="position:relative;background:#111C33;border-color:#475569;margin-bottom:10px"><div class="t" style="color:#F8FAFC">边界层</div><div class="s" style="color:#94A3B8">api · sdk · host · ssh · llm</div></div>
+    <div class="node tight" style="position:relative;background:#111C33;border-color:#475569;margin-bottom:10px"><div class="t" style="color:#F8FAFC">机制层</div><div class="s" style="color:#94A3B8">loop · pipeline · log · compaction</div></div>
+    <div class="node tight" style="position:relative;background:#111C33;border-color:#475569;margin-bottom:10px"><div class="t" style="color:#F8FAFC">装配层</div><div class="s" style="color:#94A3B8">profile · bundle · patch 层</div></div>
+    <div class="node tight" style="position:relative;background:#1E1B4B;border-color:#818CF8"><div class="t" style="color:#E2E8F0">内核层 · ctx</div><div class="s" style="color:#A5B4FC">一切皆插件 · 注册可逆 · 模型可见即已记录</div></div>
+  </div>
+  <div style="position:absolute;left:60px;bottom:32px;font-size:11.5px;color:#64748B">基于 DeepSeek Harness 0.2.2-alpha.2（提交 f3803c9）· 2026-10 · 官方文档 + 源码</div>
+</div></section>
+
+<!-- ─────────── 全书地图 ─────────── -->
+<section class="figure" id="fig-book-map"><div class="canvas">
+  <div class="kicker">BOOK MAP · 全书地图</div>
+  <h2>19 章怎么连起来</h2>
+  <div class="sub">第 6、7、8 章是其余章节反复回指的公共底座。</div>
+
+  <table class="tbl" style="left:48px;top:132px;width:1004px">
+    <tr><th style="width:150px">段</th><th style="width:230px">章节</th><th>你能获得什么</th></tr>
+    <tr><td class="hi">内核与装配</td><td><code>2 · 3 · 4 · 5</code></td><td>解释任何一次插件不加载；设计可热更的注册；改启动装配</td></tr>
+    <tr><td class="hi">工作原理</td><td><code>6 · 7 · 8 · 9</code></td><td>在正确的事件域插入策略；理解一次请求的全部装配；控制上下文预算</td></tr>
+    <tr><td class="hi">地形与选型</td><td><code>10 · 11</code></td><td>判断新行为该落在哪一层，不返工</td></tr>
+    <tr><td class="hi">定制与扩展</td><td><code>12 · 13 · 14 · 15 · 16 · 17</code></td><td>写能力包、换 provider、接模型、加 HTTP 面与 UI、做低代码定制、演进持久格式</td></tr>
+    <tr><td class="hi">工程与交付</td><td><code>18 · 19</code></td><td>五层排查、可观测性、性能证据；完成一次产品级交付</td></tr>
+    <tr><td>附录</td><td><code>A · B · C</code></td><td>进阶术语表、服务与接缝索引、源码阅读地图</td></tr>
+  </table>
+
+  <div class="note blue" style="left:48px;top:474px;width:490px">
+    <b>三条不变量贯穿全书</b><br>① 注册即逆 ② 模型可见即已记录 ③ 一切能力都是接缝
+  </div>
+  <div class="note amber" style="left:562px;top:474px;width:490px">
+    <b>复核一条断言</b><br><span class="mono">sed -n '283,300p' …/agent.ts</span> · <span class="mono">dsh --profile web --dump-config</span> · <span class="mono">pnpm run gen-doc-graphs</span>
+  </div>
+  <div class="fig-no">图 0-1</div>
+</div></section>
+
+<!-- ─────────── 图 16-1 preset 组合 ─────────── -->
+<section class="figure" id="fig-preset-composition"><div class="canvas">
+  <div class="kicker">LOW-CODE CUSTOMIZATION</div>
+  <h2>patch 层 → preset → agent 能力集</h2>
+  <div class="sub">不写新包也能改变模型看到的一切，但每层只能改它管的事。</div>
+
+  <div class="node blue" style="left:40px;top:130px;width:230px"><div class="t">patch 行</div><div class="s mono">- id: preset-standard<br>  name: '@…/dsh-agent-preset'</div></div>
+  <div class="arrow h" style="left:272px;top:174px;width:44px"></div>
+  <div class="node" style="left:318px;top:130px;width:230px"><div class="t">preset = 一行插件声明</div><div class="s">config.plugins 是一棵子树<br><span class="mono">[EntryGroup.key] = true</span> 保留子表达式</div></div>
+  <div class="arrow h" style="left:550px;top:174px;width:44px"></div>
+  <div class="node teal" style="left:596px;top:130px;width:230px"><div class="t">agent 作用域装配</div><div class="s">persona · 工具变体 · skill 目录<br>组内用 <span class="mono">cordis:group</span> + isolate</div></div>
+  <div class="arrow h" style="left:828px;top:174px;width:44px"></div>
+  <div class="node violet" style="left:874px;top:130px;width:186px"><div class="t">模型可见结果</div><div class="s">prompt 段 + tool schema</div></div>
+
+  <div class="lane" style="left:40px;top:282px;width:1020px;height:186px"><div class="lane-t">四条低代码线的边界</div>
+    <div class="node tight" style="left:20px;top:26px;width:236px"><div class="t">overlay / disabled</div><div class="s">整段替换 config<br>不写 id 每次重挂</div></div>
+    <div class="node tight" style="left:276px;top:26px;width:236px"><div class="t">preset</div><div class="s">每会话能力集<br><b>service 行必须带 isolate</b></div></div>
+    <div class="node tight" style="left:532px;top:26px;width:236px"><div class="t">skill</div><div class="s">按需加载的任务指令<br>模型只见 name + description</div></div>
+    <div class="node tight" style="left:788px;top:26px;width:212px"><div class="t">command / hook</div><div class="s">人入口不进模型轮次<br>策略 = 事件监听器</div></div>
+    <div class="s" style="position:absolute;left:20px;top:112px;font-size:11.5px;color:#475569;width:980px;line-height:1.65">
+      <b>tool vs skill vs command</b>：tool 有 schema 与 execute、进 prompt 装配；skill 是耐久 <span class="mono">user/message</span> 注入的指令正文（catalog 是 <span class="mono">source.kind:'skill-catalog'</span>）；human command 由 UI 适配器解释，<b>不成为模型消息</b>。<br>
+      <b>纠偏</b>：<span class="mono">tool-cordis</span> 只有两个只读发现工具；动态定义<b>重启即消失</b>，持久作者化的真实闭环是 <span class="mono">plugin_manager</span> 的 <span class="mono">install_bundle</span>。
+    </div>
+  </div>
+  <div class="fig-no">图 16-1</div>
+</div></section>
+
+<!-- ─────────── 图 17-1 迁移链 ─────────── -->
+<section class="figure" id="fig-migration-chain"><div class="canvas">
+  <div class="kicker">SESSION FORMAT</div>
+  <h2>相邻迁移链与两种 open</h2>
+  <div class="sub">文件名即物理代际；已提交世代永不移动、覆盖或删除。</div>
+
+  <div class="node" style="left:40px;top:136px;width:170px"><div class="t mono">session.jsonl</div><div class="s">v0（无 .v0 前缀）</div></div>
+  <div class="arrow h" style="left:212px;top:180px;width:40px"></div>
+  <div class="node" style="left:254px;top:136px;width:170px"><div class="t mono">session.v1.jsonl</div><div class="s">+ .zstd 可选</div></div>
+  <div class="arrow h" style="left:426px;top:180px;width:40px"></div>
+  <div class="node" style="left:468px;top:136px;width:170px"><div class="t mono">session.v2.jsonl</div><div class="s">内嵌 assistant 流</div></div>
+  <div class="arrow h" style="left:640px;top:180px;width:40px"></div>
+  <div class="node" style="left:682px;top:136px;width:170px"><div class="t mono">session.v3.jsonl</div><div class="s">surface 意图</div></div>
+  <div class="arrow h" style="left:854px;top:180px;width:40px"></div>
+  <div class="node teal" style="left:896px;top:136px;width:164px"><div class="t mono">session.v4.jsonl</div><div class="s">当前 writer = 4</div></div>
+
+  <div class="note red" style="left:40px;top:250px;width:1020px">
+    <b>链的编译期约束</b> · <span class="mono">defineSessionFormatMigration</span> 要求 <span class="mono">to === from + 1</span>；<span class="mono">CompiledSessionFormatChain</span> 逐版本检查缺边 / 重复边 / 多余边，并拒绝比本构建更新的存储版本。<b>profile 不能增删或重排边。</b>
+  </div>
+
+  <div class="lane blue" style="left:40px;top:318px;width:498px;height:196px"><div class="lane-t">read open · 只在内存里 compose</div>
+    <div class="s" style="position:absolute;left:20px;top:26px;width:458px;font-size:12.3px;color:#475569;line-height:1.7">
+      选数值最高的规范代际 → 解码 → 沿静态相邻链 compose 一次 → 返回校验过的当前逻辑事件。<br>
+      <b>不发布后继</b>；header-only 的 <span class="mono">stat</span> / <span class="mono">list</span> 只读 header，不加载事件。
+    </div>
+  </div>
+  <div class="lane amber" style="left:562px;top:318px;width:498px;height:196px"><div class="lane-t">write open · 独占发布后继</div>
+    <div class="s" style="position:absolute;left:20px;top:26px;width:458px;font-size:12.3px;color:#475569;line-height:1.7">
+      先 encode → verify → <b>独占发布</b>最终 current 命名的新文件，源文件不动。<br>
+      POSIX 用 <span class="mono">link()</span> + 目录 fsync；Windows 用不覆盖的 write-through <span class="mono">MoveFileExW</span>。
+    </div>
+  </div>
+
+  <div class="note" style="left:40px;top:530px;width:1020px">
+    <b>破损尾</b> · 不完整最后一行丢弃 · 撕裂的 zstd 帧只贡献完整解码记录 · 写 handle 在首个新批次前撕裂截断并耐久重写（被撕裂帧前缀先做快照）· 迁移只为"被后续 turn/start 密封的有界发布重启"补插缺失的 turn/end
+  </div>
+  <div class="fig-no">图 17-1</div>
+</div></section>
+
+<!-- ─────────── 图 18-1 五层排查 ─────────── -->
+<section class="figure" id="fig-debug-tree"><div class="canvas">
+  <div class="kicker">DIAGNOSIS</div>
+  <h2>五层排查顺序</h2>
+  <div class="sub">可诊断性是被设计出来的：状态机、事件、生成目录、闸门、静默边界。</div>
+
+  <div class="node blue" style="left:40px;top:130px;width:196px"><div class="t"><span class="step-n">1</span>fiber 状态</div><div class="s">PENDING / FAILED / UNLOADING<br>看 <span class="mono">internal/status</span></div></div>
+  <div class="arrow h" style="left:238px;top:174px;width:34px"></div>
+  <div class="node" style="left:274px;top:130px;width:196px"><div class="t"><span class="step-n">2</span>配置树</div><div class="s"><span class="mono">--dump-config</span><br><span class="c"># == 源, patched by 层</span></div></div>
+  <div class="arrow h" style="left:472px;top:174px;width:34px"></div>
+  <div class="node" style="left:508px;top:130px;width:196px"><div class="t"><span class="step-n">3</span>启动审计</div><div class="s">required 列表必须 ACTIVE<br>否则 StartupError</div></div>
+  <div class="arrow h" style="left:706px;top:174px;width:34px"></div>
+  <div class="node" style="left:742px;top:130px;width:196px"><div class="t"><span class="step-n">4</span>热更新</div><div class="s">单串行队列 + 事务标记<br>planReplacement 分类</div></div>
+  <div class="arrow h" style="left:940px;top:174px;width:34px"></div>
+  <div class="node teal" style="left:978px;top:130px;width:82px"><div class="t"><span class="step-n">5</span>自省</div><div class="s">inspector</div></div>
+
+  <div class="lane" style="left:40px;top:270px;width:500px;height:214px"><div class="lane-t">每层要看的符号</div>
+    <div class="s" style="position:absolute;left:20px;top:24px;width:460px;font-size:12.2px;color:#475569;line-height:1.75">
+      ① <span class="mono">_getState()</span> 四行 · <span class="mono">Service[check]</span> · <span class="mono">getEffects()</span> 诊断树<br>
+      ② 层注释与 id 稳定性 · <span class="mono">--dump-default-config</span> 对比<br>
+      ③ <span class="mono">host preparation failed</span> vs <span class="mono">plugin tree failed to load</span><br>
+      ④ <span class="mono">runExclusive</span> 队列 · <span class="mono">unmanaged-plugin</span> 留待重启<br>
+      ⑤ <span class="mono">ctx.inspector</span> · <span class="mono">ctx.sessionQuery</span> · <span class="mono">formatSessionMarkdown</span>
+    </div>
+  </div>
+
+  <div class="lane violet" style="left:562px;top:270px;width:498px;height:214px"><div class="lane-t">可观测性三条管道</div>
+    <div class="node tight" style="left:20px;top:24px;width:458px"><div class="t mono">ctx.otel → ctx.productTelemetry → ctx.sessionTelemetry</div><div class="s">显式提交才采集 · session 侧捕获、脱敏后交给一个后端，输出离开进程</div></div>
+    <div class="node tight" style="left:20px;top:104px;width:458px"><div class="t">性能证据是要求，不是可选</div><div class="s mono">vitest.bench.config.ts · scaling-report · "Changes carry performance evidence"</div></div>
+  </div>
+
+  <div class="note red" style="left:40px;top:506px;width:1020px">
+    <b>六个高频事故形态</b> · 不写 id 每次重挂 · 以为 patch 深合并 · waterfall 忘记 next() 把内置行为 veto 掉 · 在已卸载 ctx 上 ctx.plugin() · 把 DISPOSED 当"清理完成" · session/event 观察者抛错被静默隔离（栅栏是 session/flush）
+  </div>
+  <div class="fig-no">图 18-1</div>
+</div></section>
+
+<!-- ─────────── 图 19-1 结业架构 ─────────── -->
+<section class="figure" id="fig-capstone-arch"><div class="canvas">
+  <div class="kicker">CAPSTONE</div>
+  <h2>changelog 能力在插件树中的位置</h2>
+  <div class="sub">一次交付要同时满足：可安装、可观测、可回放。</div>
+
+  <div class="node blue center" style="left:40px;top:130px;width:200px"><div class="t">bundle patch 行</div><div class="s mono">dsh.bundle.patch<br>dsh.client</div></div>
+  <div class="arrow h" style="left:242px;top:174px;width:40px"></div>
+  <div class="node center" style="left:284px;top:130px;width:200px"><div class="t">插件挂载</div><div class="s">tool · projection<br>Remote service · UI 卡片</div></div>
+  <div class="arrow h" style="left:486px;top:174px;width:40px"></div>
+  <div class="node teal center" style="left:528px;top:130px;width:200px"><div class="t">会话日志</div><div class="s mono">changelog/record</div></div>
+  <div class="arrow h" style="left:730px;top:174px;width:40px"></div>
+  <div class="node violet center" style="left:772px;top:130px;width:288px"><div class="t">两条消费路径</div><div class="s">模型侧：deriveMessages → 请求<br>浏览器侧：Remote 流 + 投影快照</div></div>
+
+  <div class="lane" style="left:40px;top:286px;width:1020px;height:158px"><div class="lane-t">每个部件的验收判据</div>
+    <div class="node tight" style="left:20px;top:24px;width:236px"><div class="t">耐久事实</div><div class="s">只有 model-visible 才进历史<br>UI 状态走投影</div></div>
+    <div class="node tight" style="left:276px;top:24px;width:236px"><div class="t">投影</div><div class="s">apply 同步 · 无关事件返回同一引用<br>stateVersion 一致才共享注册</div></div>
+    <div class="node tight" style="left:532px;top:24px;width:236px"><div class="t">工具</div><div class="s">defineTool 先校验后执行<br>presentCall 必须纯</div></div>
+    <div class="node tight" style="left:788px;top:24px;width:212px"><div class="t">Remote</div><div class="s">新能力 = 新 service<br>失败只用 RemoteError</div></div>
+  </div>
+
+  <div class="note amber" style="left:40px;top:466px;width:1020px">
+    <b>复盘两次故障</b> · "工具没出现"沿五层排查：register 是否成功 → when 是否求值为假 → restrict 是否滤掉 → patch 行是否被上层替换 → dump-config 是否含该行。"投影不更新"：apply 是否返回了新引用 → stateVersion 是否被缓存拒绝 → checkpoint 是否落后（可能而非超前）→ 是否走了 cachedSnapshot 的最低水位。
+  </div>
+  <div class="fig-no">图 19-1</div>
+</div></section>
+
+</body></html>

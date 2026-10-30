@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><title>高级教材插图 · 第一部分</title></head><body>
+
+<!-- ─────────── 图 1-1 四层模型 ─────────── -->
+<section class="figure" id="fig-mental-layers"><div class="canvas">
+  <div class="kicker">MENTAL MODEL · 心智模型</div>
+  <h2>DeepSeek Harness 的四层</h2>
+  <div class="sub">你打算改哪一层，决定你要读到多深。</div>
+
+  <div class="strata" style="left:48px;top:132px;width:560px">
+    <div class="stratum l5"><div class="st">边界层 &nbsp;<span style="font-weight:400;font-size:11.5px;color:#64748B">能力如何到达浏览器 / 外部进程 / 远程主机 / 不同模型</span></div><div class="ss">packages/api · sdk · host · ssh · llm &nbsp;→&nbsp; 第 13、14、15、17 章</div></div>
+    <div class="stratum l4"><div class="st">机制层 &nbsp;<span style="font-weight:400;font-size:11.5px;color:#64748B">一轮对话如何被驱动、一次调用如何被裁决</span></div><div class="ss">packages/core · session · compaction &nbsp;→&nbsp; 第 6、7、8、9 章</div></div>
+    <div class="stratum l2"><div class="st">装配层 &nbsp;<span style="font-weight:400;font-size:11.5px;color:#64748B">这台机器上这棵树由哪些层叠出来</span></div><div class="ss">packages/boot · bundle · apps/cli &nbsp;→&nbsp; 第 5、16 章</div></div>
+    <div class="stratum l1"><div class="st">内核层 &nbsp;<span style="font-weight:400;font-size:11.5px;color:#64748B">插件如何挂载、依赖如何变成顺序、注册如何回退</span></div><div class="ss">vendor/cordis · vendor/loader · core/scope &nbsp;→&nbsp; 第 2、3、4 章</div></div>
+  </div>
+
+  <div class="arrow v up" style="left:32px;top:140px;height:340px"></div>
+  <div class="alabel" style="left:6px;top:300px;transform:rotate(-90deg)">依赖方向</div>
+
+  <div class="note blue" style="left:644px;top:132px;width:408px">
+    <b>三条贯穿全书的不变量</b><br>
+    ① 注册即逆 —— 没有"全局初始化一次"的合法位置<br>
+    ② 模型可见即已记录 —— 请求是日志的纯函数<br>
+    ③ 一切能力都是接缝 —— Definition / Provider / Consumer
+  </div>
+  <div class="note amber" style="left:644px;top:288px;width:408px">
+    <b>冲突时的优先级</b><br>
+    你检出的源码 &gt; 仓库生成目录 &gt; 官方文档叙述页 &gt; 本书<br>
+    <span style="font-size:11.5px">行号是入口，不是坐标。</span>
+  </div>
+
+  <table class="tbl" style="left:48px;top:496px;width:1004px">
+    <tr><th style="width:210px">你的目标</th><th>建议路径</th></tr>
+    <tr><td>给框架写扩展（主线）</td><td><code>2 → 3 → 4 → 11 → 12 → 13 → 19</code></td></tr>
+    <tr><td>排查疑难行为</td><td><code>3 → 6 → 7 → 8 → 18</code></td></tr>
+    <tr><td>接入自己的模型与执行环境</td><td><code>5 → 13 → 14 → 17 → 15</code></td></tr>
+  </table>
+  <div class="fig-no">图 1-1</div>
+</div></section>
+
+<!-- ─────────── 图 2-1 Fiber 状态机 ─────────── -->
+<section class="figure" id="fig-fiber-states"><div class="canvas">
+  <div class="kicker">CORDIS · LIFECYCLE</div>
+  <h2>Fiber 状态机</h2>
+  <div class="sub">state 不是被赋值的字段，而是每次由 _getState() 现算。</div>
+
+  <div class="node blue center" style="left:60px;top:200px;width:150px"><div class="t">PENDING</div><div class="s">依赖不齐<br>epoch = INACTIVE</div></div>
+  <div class="node teal center" style="left:288px;top:150px;width:150px"><div class="t">LOADING</div><div class="s">过渡态<br>inertia 存在中</div></div>
+  <div class="node center" style="left:516px;top:200px;width:150px;border-color:#4D6BFE;box-shadow:0 0 0 3px rgba(77,107,254,.15)"><div class="t">ACTIVE</div><div class="s">epoch 有效<br>可被注入</div></div>
+  <div class="node amber center" style="left:516px;top:372px;width:150px"><div class="t">UNLOADING</div><div class="s">过渡态<br>disposers 反序并发</div></div>
+  <div class="node red center" style="left:288px;top:420px;width:150px"><div class="t">FAILED</div><div class="s">_error 被记住<br>不自动重试</div></div>
+  <div class="node slate center" style="left:760px;top:200px;width:150px"><div class="t">DISPOSED</div><div class="s">uid === null<br>不可逆</div></div>
+
+  <div class="arrow h" style="left:212px;top:222px;width:74px"></div>
+  <div class="alabel" style="left:206px;top:186px">_reload()</div>
+  <div class="arrow h" style="left:440px;top:196px;width:74px"></div>
+  <div class="arrow h left" style="left:440px;top:236px;width:74px"></div>
+  <div class="alabel" style="left:432px;top:250px">依赖撤销</div>
+  <div class="arrow v" style="left:590px;top:262px;height:108px"></div>
+  <div class="alabel" style="left:600px;top:300px">dispose()</div>
+  <div class="arrow h left" style="left:440px;top:420px;width:74px"></div>
+  <div class="arrow h" style="left:668px;top:222px;width:90px"></div>
+  <div class="alabel" style="left:662px;top:186px">清理完成</div>
+  <div class="arrow v" style="left:364px;top:300px;height:118px"></div>
+  <div class="alabel" style="left:300px;top:340px">apply() 抛错 → FAILED</div>
+
+  <div class="code sm" style="left:760px;top:330px;width:292px"><span class="c">// fiber.ts:573-578</span>
+<span class="k">if</span> (uid === <span class="p">null</span>) → DISPOSED
+<span class="k">if</span> (_error)        → FAILED
+<span class="k">if</span> (epoch !== INACTIVE) → ACTIVE
+<span class="k">return</span> PENDING</div>
+
+  <div class="note" style="left:60px;top:520px;width:992px">
+    <b>诊断三条</b> · 停在 PENDING → 查谁 provide 了它，而不是查加载顺序 · FAILED → 看 logger.error，同一 fiber 不会自动重试 · 长期 UNLOADING → 某个异步 disposer 卡住，inertia 是链式的，整棵子树跟着停
+  </div>
+  <div class="fig-no">图 2-1</div>
+</div></section>
+
+<!-- ─────────── 图 2-2 epoch 驱动重载 ─────────── -->
+<section class="figure" id="fig-epoch-reload"><div class="canvas">
+  <div class="kicker">CORDIS · DEPENDENCY AS ORDER</div>
+  <h2>epoch：把依赖变成顺序</h2>
+  <div class="sub">epoch 是"我依赖的每个 provider fiber 的 uid"拼成的指纹。</div>
+
+  <div class="lane blue" style="left:48px;top:132px;width:300px;height:250px"><div class="lane-t">依赖侧 · provider fibers</div>
+    <div class="node tight" style="left:24px;top:34px;width:252px"><div class="t mono">ctx.llm</div><div class="s mono">uid = a1f3</div></div>
+    <div class="node tight" style="left:24px;top:96px;width:252px"><div class="t mono">ctx.tools</div><div class="s mono">uid = 7c02</div></div>
+    <div class="node tight ghost" style="left:24px;top:158px;width:252px"><div class="t mono">ctx.sessions</div><div class="s">尚未 ACTIVE → epoch = INACTIVE</div></div>
+  </div>
+
+  <div class="arrow h" style="left:352px;top:250px;width:56px"></div>
+  <div class="code sm" style="left:412px;top:150px;width:290px"><span class="c">// fiber.ts:611-623</span>
+<span class="k">for</span> (<span class="k">const</span> name <span class="k">of</span> inject) {
+  <span class="k">const</span> impl = _store[name]
+  <span class="k">if</span> (!impl) { epoch = INACTIVE; <span class="k">break</span> }
+  epoch += <span class="s">':'</span> + impl.fiber.uid
+}
+<span class="c">// → ":a1f3:7c02:9be1"</span></div>
+
+  <div class="lane" style="left:412px;top:300px;width:290px;height:132px"><div class="lane-t">消费者 fiber</div>
+    <div class="node tight center" style="left:22px;top:30px;width:246px"><div class="t mono">dsh-agent-loop</div><div class="s">inject: llm · tools · sessions</div></div>
+  </div>
+
+  <div class="lane teal" style="left:716px;top:132px;width:336px;height:300px"><div class="lane-t">_setEpoch 的三种迁移</div>
+    <div class="node tight teal" style="left:20px;top:30px;width:296px"><div class="t">INACTIVE → 有效</div><div class="s">_reload() · 状态 LOADING</div></div>
+    <div class="node tight amber" style="left:20px;top:104px;width:296px"><div class="t">有效 → INACTIVE</div><div class="s">_unload() · 状态 UNLOADING</div></div>
+    <div class="node tight blue" style="left:20px;top:178px;width:296px"><div class="t">指纹变化（provider 被替换）</div><div class="s">_reload() · 消费者重新 apply</div></div>
+    <div class="s" style="position:absolute;left:20px;top:256px;font-size:11.5px;color:#64748B">inertia 存在时不重启自己<br><span class="mono">if (this.inertia) return</span></div>
+  </div>
+
+  <div class="note" style="left:48px;top:452px;width:654px">
+    <b>没有 waitReady()</b> · 延迟就绪 = 依赖缺失停在 PENDING + <span class="mono">Service[check]</span> 让依赖者继续等 + <span class="mono">reflect.notify()</span> 在提供/撤销时重算所有依赖 fiber
+  </div>
+  <div class="fig-no">图 2-2</div>
+</div></section>
+
+<!-- ─────────── 图 3-1 五种分派模式 ─────────── -->
+<section class="figure" id="fig-dispatch-modes"><div class="canvas">
+  <div class="kicker">CORDIS · EVENTS</div>
+  <h2>五种分派模式</h2>
+  <div class="sub">模式是事件公共契约的一部分，@mode 标签由生成脚本校验。</div>
+
+  <table class="tbl" style="left:48px;top:132px;width:1004px">
+    <tr><th style="width:110px">模式</th><th style="width:96px">是否 await</th><th style="width:150px">顺序</th><th style="width:88px">返回值</th><th style="width:210px">短路方式</th><th>典型事件</th></tr>
+    <tr><td><code>emit</code></td><td>否</td><td>注册序</td><td>无</td><td>不能短路</td><td><code>session/event</code>、<code>agent/status</code>、<code>tools/result</code></td></tr>
+    <tr><td><code>parallel</code></td><td>是</td><td>并发</td><td>无</td><td>不能；有拒绝抛 AggregateError</td><td><code>session/flush</code>（持久化栅栏）</td></tr>
+    <tr><td><code>serial</code></td><td>是</td><td>注册序逐个 await</td><td>有</td><td>第一个 isBailed 值</td><td><code>agent/created</code>、<code>agent/turn-stopping</code></td></tr>
+    <tr><td><code>bail</code></td><td>否</td><td>注册序同步</td><td>有</td><td>第一个 isBailed 值</td><td><code>internal/listener</code></td></tr>
+    <tr><td><code>waterfall</code></td><td>取决于监听器</td><td>外层先</td><td>有</td><td class="hi">省略 next() = 否决内置行为</td><td><code>agent/pre-step</code>、<code>tools/pre-execute</code>、<code>llm/stream</code></td></tr>
+  </table>
+
+  <div class="code sm" style="left:48px;top:392px;width:494px"><span class="c">// vendor/cordis/src/events.ts:234-243</span>
+<span class="f">waterfall</span>(...args) {
+  <span class="k">const</span> cbs = <span class="k">this</span>.dispatch(<span class="s">'waterfall'</span>, args)
+  <span class="k">const</span> inner = args.pop()          <span class="c">// 内置行为</span>
+  <span class="k">const</span> next = () =&gt; (cbs.shift() ?? inner)(...args)
+  args.push(next); <span class="k">return</span> next()
+}</div>
+
+  <div class="note blue" style="left:562px;top:392px;width:490px">
+    <b>选型口诀</b><br>
+    要拦截点 → waterfall &nbsp;·&nbsp; 要检查点 → serial<br>
+    要广播 → emit &nbsp;·&nbsp; 要"接管注册" → bail（internal/listener）<br>
+    <span style="font-size:11.5px">包装别人的决定要写 <span class="mono">{ ...decision, messages }</span>，否则会丢掉下游声明的 <span class="mono">startsRequestSeries</span>。</span>
+  </div>
+  <div class="fig-no">图 3-1</div>
+</div></section>
+
+<!-- ─────────── 图 4-1 作用域事件准入 ─────────── -->
+<section class="figure" id="fig-scope-dispatch"><div class="canvas">
+  <div class="kicker">SCOPE · EVENT ADMISSION</div>
+  <h2>事件只向上流动，从不向下</h2>
+  <div class="sub">scopeTarget 造的载体只做一件事：提供一个 [Context.filter]。</div>
+
+  <div class="lane" style="left:48px;top:132px;width:392px;height:340px"><div class="lane-t">作用域链</div>
+    <div class="node tight blue center" style="left:120px;top:30px;width:152px"><div class="t mono">root ctx</div><div class="s">未打标</div></div>
+    <div class="node tight center" style="left:120px;top:112px;width:152px"><div class="t mono">Agent A</div><div class="s">key = A（A 自身）</div></div>
+    <div class="node tight teal center" style="left:120px;top:194px;width:152px"><div class="t mono">subagent A1</div><div class="s">key = A1 · parent = A</div></div>
+    <div class="arrow v" style="left:195px;top:64px;height:46px"></div>
+    <div class="arrow v" style="left:195px;top:146px;height:46px"></div>
+    <div class="s" style="position:absolute;left:24px;top:262px;font-size:11.5px;color:#64748B;width:344px">一条 <span class="mono">scopeParents</span> 关系支撑两个方向：<br>注册视图向下继承 · 事件准入向上流动</div>
+  </div>
+
+  <div class="code sm" style="left:460px;top:132px;width:330px"><span class="c">// scope/src/index.ts:170-185</span>
+<span class="f">scopeTarget</span>(base, key) {
+  carrier[Context.filter] = ctx =&gt; {
+    <span class="k">if</span> (baseFilter && !baseFilter(ctx)) <span class="k">return</span> <span class="p">false</span>
+    <span class="k">const</span> tag = scopeOf(ctx)
+    <span class="k">if</span> (tag === <span class="p">undefined</span>) <span class="k">return</span> <span class="p">true</span>   <span class="c">// ①</span>
+    <span class="k">for</span> (c = key; c; c = parent(c))
+      <span class="k">if</span> (c === tag) <span class="k">return</span> <span class="p">true</span>        <span class="c">// ②</span>
+    <span class="k">return</span> <span class="p">false</span>                          <span class="c">// ③</span>
+  }
+}</div>
+
+  <div class="lane violet" style="left:808px;top:132px;width:244px;height:340px"><div class="lane-t">派发给 A1 时谁能收到</div>
+    <div class="node tight center" style="left:18px;top:30px;width:208px;border-color:#99F6E4"><div class="t">未打标监听者</div><div class="s">① 全局放行 · UI 桥、遥测</div></div>
+    <div class="node tight center" style="left:18px;top:104px;width:208px;border-color:#99F6E4"><div class="t">标签 = A（祖先）</div><div class="s">② 放行 · 父观察子</div></div>
+    <div class="node tight center" style="left:18px;top:178px;width:208px;border-color:#99F6E4"><div class="t">标签 = A1（自身）</div><div class="s">② 放行</div></div>
+    <div class="node tight red center" style="left:18px;top:252px;width:208px"><div class="t">标签 = A1 的后代</div><div class="s">③ 排除 · 事件不向下</div></div>
+  </div>
+
+  <div class="note amber" style="left:48px;top:490px;width:1004px">
+    <b>registry-subject 事件故意不过滤</b> · "有个工具被注册了"是关于注册表的事实，用无 key 的 carrier 派发，只被未打标监听者接收；<span class="mono">agent/created</span> 用 <span class="mono">ctx.serial(carrier, ...)</span> 且返回 void —— 串行装配点，不可否决
+  </div>
+  <div class="fig-no">图 4-1</div>
+</div></section>
+
+<!-- ─────────── 图 5-1 层叠出插件树 ─────────── -->
+<section class="figure" id="fig-layer-stack"><div class="canvas">
+  <div class="kicker">COMPOSITION ROOT</div>
+  <h2>层依次施加到空条目列表</h2>
+  <div class="sub">核心算子只有一个：applyEntryPatches([], patches.flat())</div>
+
+  <div class="strata" style="left:48px;top:130px;width:470px">
+    <div class="stratum l1"><div class="st">① bundle 层 <span style="font-weight:400;font-size:11px;color:#64748B">按 dsh.profile.bundles 顺序</span></div><div class="ss mono">dsh-base → dsh-web-app（patch 可为数组）</div></div>
+    <div class="stratum l2"><div class="st">② profile 的 cordis.patch.yml</div><div class="ss">缺文件 = 无此层</div></div>
+    <div class="stratum l3"><div class="st">③ $DSH_HOME/cordis.patch.yml</div><div class="ss">排在 profile 之后 ⇒ <b>home 优先</b></div></div>
+    <div class="stratum l4"><div class="st">④ --patch overlay</div><div class="ss mono">缺文件 = 抛错（与 ②③ 不同）</div></div>
+    <div class="stratum l5"><div class="st">⑤ 遥测开关补丁</div><div class="ss mono">{ id: 'session-telemetry-otel', disabled: true }</div></div>
+  </div>
+
+  <div class="arrow h" style="left:526px;top:300px;width:60px"></div>
+  <div class="node blue center" style="left:596px;top:196px;width:200px"><div class="t">插件树</div><div class="s">Loader EntryTree<br>按 id 寻址</div></div>
+  <div class="arrow v" style="left:695px;top:264px;height:52px"></div>
+  <div class="node center" style="left:596px;top:322px;width:200px"><div class="t">await Loader</div><div class="s">auditStartupEntries</div></div>
+
+  <div class="note red" style="left:824px;top:196px;width:228px">
+    <b>patch 语义</b><br>按 id 命中后<b>整段替换 config</b>，不做深合并 —— 覆盖方必须重述要保留的字段
+  </div>
+  <div class="code sm" style="left:824px;top:322px;width:228px"><span class="c"># --dump-config 的注释</span>
+<span class="c"># == base.yml, patched by surface.yml</span>
+- id: <span class="s">persona</span>
+<span class="c"># == base.yml</span>
+- id: <span class="s">untouched</span></div>
+
+  <div class="note" style="left:48px;top:486px;width:1004px">
+    <b>boot 顺序里两个失败标签</b> · <span class="mono">host preparation failed</span>（profileContext / PluginPackages / cmdline，发生在任何配置树条目挂载之前）与 <span class="mono">plugin tree failed to load</span>（Loader 条目）。根 <span class="mono">cordis.yml</span> 被重写为空，只为给 Loader 一个锚定 baseUrl 的真实 include 根。
+  </div>
+  <div class="fig-no">图 5-1</div>
+</div></section>
+
+</body></html>

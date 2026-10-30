@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><title>高级教材插图 · 第三部分</title></head><body>
+
+<!-- ─────────── 图 11-1 选型决策树 ─────────── -->
+<section class="figure" id="fig-decision-tree"><div class="canvas">
+  <div class="kicker">EXTENSION MAP</div>
+  <h2>六种定制深度</h2>
+  <div class="sub">按顺序问六个问题；第一个"是"就是你的落点。</div>
+
+  <div class="node blue center" style="left:40px;top:136px;width:250px"><div class="t">新能力模型可见？</div><div class="s">要进 prompt 的 schema</div></div>
+  <div class="node center" style="left:40px;top:258px;width:250px"><div class="t">要换实现 / 换协议？</div><div class="s">已有 Definition 包？</div></div>
+  <div class="node" style="left:40px;top:380px;width:250px"><div class="t">只是拦截 / 策略 / 观测？</div><div class="s">不改能力本身</div></div>
+  <div class="node amber center" style="left:40px;top:502px;width:250px"><div class="t">只是改一行配置？</div><div class="s">零新包</div></div>
+
+  <div class="node teal center" style="left:410px;top:136px;width:250px"><div class="t">① tool</div><div class="s mono">ctx.tools.register(defineTool)</div></div>
+  <div class="node teal center" style="left:410px;top:258px;width:250px"><div class="t">② seam provider</div><div class="s">只做 Provider，不改 Consumer</div></div>
+  <div class="node teal center" style="left:410px;top:380px;width:250px"><div class="t">③ event listener</div><div class="s">agent/* · tools/* · session/event</div></div>
+  <div class="node teal center" style="left:410px;top:502px;width:250px"><div class="t">④ patch / overlay</div><div class="s">按 id 整段替换 config</div></div>
+
+  <div class="node violet center" style="left:780px;top:196px;width:280px"><div class="t">⑤ preset 行</div><div class="s">给某个会话一套不同能力集<br><b>service 行必须带 isolate realm</b></div></div>
+  <div class="node violet center" style="left:780px;top:318px;width:280px"><div class="t">⑥ 平台面</div><div class="s">UI → ctx.slots<br>HTTP → 自己的 TypertRemoteService<br>durable 状态 → 扩 SessionEventMap</div></div>
+  <div class="node red center" style="left:780px;top:462px;width:280px"><div class="t">都不是？</div><div class="s">说明你在改 loop 本身<br>——先更新 docs/architecture.md 的地图</div></div>
+
+  <div class="arrow h" style="left:292px;top:180px;width:116px"></div>
+  <div class="alabel" style="left:318px;top:152px">是</div>
+  <div class="arrow h" style="left:292px;top:302px;width:116px"></div>
+  <div class="arrow h" style="left:292px;top:424px;width:116px"></div>
+  <div class="arrow h" style="left:292px;top:546px;width:116px"></div>
+  <div class="arrow v" style="left:165px;top:206px;height:50px"></div>
+  <div class="arrow v" style="left:165px;top:328px;height:50px"></div>
+  <div class="arrow v" style="left:165px;top:450px;height:50px"></div>
+  <div class="arrow h violet" style="left:662px;top:238px;width:116px"></div>
+  <div class="arrow h violet" style="left:662px;top:360px;width:116px"></div>
+
+  <div class="fig-no">图 11-1</div>
+</div></section>
+
+<!-- ─────────── 图 12-1 能力包解剖 ─────────── -->
+<section class="figure" id="fig-package-anatomy"><div class="canvas">
+  <div class="kicker">CAPABILITY PACKAGE</div>
+  <h2>一个能力包的骨架与四条线</h2>
+  <div class="sub">同一份代码要同时通过：装配、注册、裁决、闸门四条线。</div>
+
+  <div class="code sm" style="left:40px;top:128px;width:330px"><span class="c">packages/&lt;group&gt;/tool-&lt;name&gt;/</span>
+  package.json      <span class="c"># exports + dsh.bundle.patch</span>
+  tsconfig.json
+  tsdown.config.ts
+  src/
+    index.ts        <span class="c"># name / inject / Config / apply</span>
+    types.ts        <span class="c"># 只放类型</span>
+  lib/              <span class="c"># 构建产物，源面测试不解析</span>
+  tests/
+    unit.spec.ts
+    integration.spec.ts
+    loader-composition.spec.ts
+  locale/
+  README.md · README.zh.md · README.i18n.yaml</div>
+
+  <div class="lane teal" style="left:390px;top:128px;width:670px;height:300px"><div class="lane-t">四条线各自要过什么</div>
+    <div class="node tight" style="left:20px;top:26px;width:306px"><div class="t">① 装配线</div><div class="s">patch 行按 id 挂载 · 不写 id 每次重挂 · config 整段替换</div></div>
+    <div class="node tight" style="left:344px;top:26px;width:306px"><div class="t">② 注册线</div><div class="s">注册必须是可逆 effect · 服务随 fiber 自动消失</div></div>
+    <div class="node tight" style="left:20px;top:106px;width:306px"><div class="t">③ 裁决线</div><div class="s">pre-execute 可协商 · guard 单调不可撤销 · 并发要申请</div></div>
+    <div class="node tight" style="left:344px;top:106px;width:306px"><div class="t">④ 闸门线</div><div class="s">build:check · test:coverage 每文件 100% · tool-catalog manifest</div></div>
+    <div class="node tight blue" style="left:20px;top:186px;width:630px"><div class="t">README 末尾两节是强制的</div><div class="s">## Model Experience（What the model sees / Token effect / KV Cache effect）+ ## Known Limitations and Deferred Work</div></div>
+  </div>
+
+  <div class="node red" style="left:40px;top:452px;width:330px"><div class="t">最容易翻车的一条</div><div class="s">服务包默认导出类；函数插件命名导出且<b>不得有 default export</b> —— 混用会被 Loader 静默丢弃</div></div>
+  <div class="note" style="left:390px;top:452px;width:670px">
+    <b>HMR-safety 是硬性要求</b> · 注册表贡献必须用 <span class="mono">afterEach { await context?.fiber.dispose() }</span> 证明 disposer 真的移除了注册；Loader 组合冒烟证明 Config 字段是真可配置而非常量。
+  </div>
+  <div class="fig-no">图 12-1</div>
+</div></section>
+
+<!-- ─────────── 图 13-1 执行世界 ─────────── -->
+<section class="figure" id="fig-execution-world"><div class="canvas">
+  <div class="kicker">EXECUTION WORLD</div>
+  <h2>一个世界，三种 provider</h2>
+  <div class="sub">接缝的价值：换一处，整个产品跟着换 —— 没有 provider 分叉。</div>
+
+  <div class="node blue center" style="left:40px;top:132px;width:200px"><div class="t">Consumer</div><div class="s mono">tool-bash · tool-fs<br>tool-terminal · tool-lsp</div></div>
+  <div class="arrow h" style="left:242px;top:176px;width:52px"></div>
+  <div class="node center" style="left:296px;top:132px;width:200px"><div class="t">Definition（seam）</div><div class="s mono">ctx.shell · ctx.fs<br>ctx.subprocess · ctx.sandbox</div></div>
+  <div class="arrow h" style="left:498px;top:176px;width:52px"></div>
+
+  <div class="lane" style="left:552px;top:112px;width:508px;height:250px"><div class="lane-t">同一个 Session 的三种世界</div>
+    <div class="node tight teal" style="left:20px;top:26px;width:468px"><div class="t">本地</div><div class="s mono">fs-local · subprocess-local · bash-local · sandbox-local</div></div>
+    <div class="node tight amber" style="left:20px;top:92px;width:468px"><div class="t">沙箱</div><div class="s mono">fs-sandbox · bash-sandbox · terminal-bash · 共享 ctx.sandboxPolicy</div></div>
+    <div class="node tight violet" style="left:20px;top:158px;width:468px"><div class="t">远端 POSIX（共享一条 OpenSSH 连接）</div><div class="s mono">fs-ssh · subprocess-ssh · sandbox-ssh ← ctx.ssh</div></div>
+    <div class="s" style="position:absolute;left:20px;top:216px;font-size:11px;color:#64748B">换 provider 时 Consumer 一行不改 —— 这就是接缝完整性的验收标准</div>
+  </div>
+
+  <div class="lane red" style="left:40px;top:382px;width:1020px;height:184px"><div class="lane-t">策略与裁决：谁在什么时候说话</div>
+    <div class="node tight" style="left:20px;top:26px;width:230px"><div class="t">ctx.permissionPresets</div><div class="s">一条 permission/preset 事件<br>同时驱动两个旋钮</div></div>
+    <div class="node tight" style="left:270px;top:26px;width:230px"><div class="t">ctx.sandboxPolicy</div><div class="s">唯一持有部署默认 mode<br>+ workspace root</div></div>
+    <div class="node tight" style="left:520px;top:26px;width:250px"><div class="t">ctx.approval</div><div class="s">asked → request (wf) → decided<br>无应答 = unavailable → deny</div></div>
+    <div class="node tight" style="left:790px;top:26px;width:210px"><div class="t">ctx.sandbox.confine</div><div class="s">交出确切 argv<br>不可用即 fail closed</div></div>
+    <div class="s" style="position:absolute;left:20px;top:118px;font-size:11.5px;color:#475569;width:980px">bash 与 fs 两家都读同一个 sandboxPolicy，因此<b>不可能被关到不同 root</b>；一次性提权要求"严格更宽的 mode + 非空 justification + 审批"三件齐备。</div>
+  </div>
+  <div class="fig-no">图 13-1</div>
+</div></section>
+
+<!-- ─────────── 图 14-1 模型接入层 ─────────── -->
+<section class="figure" id="fig-adapter-seam"><div class="canvas">
+  <div class="kicker">LLM LAYER</div>
+  <h2>从 prepareCall 到耐久结算</h2>
+  <div class="sub">适配器遵守的是流协议义务，不是某个 SDK。</div>
+
+  <div class="node blue center" style="left:40px;top:132px;width:180px"><div class="t">loop</div><div class="s">每次重试重新 prepare</div></div>
+  <div class="arrow h" style="left:222px;top:176px;width:44px"></div>
+  <div class="node center" style="left:268px;top:132px;width:190px"><div class="t">ctx.llm</div><div class="s mono">registerAdapter(providers, adapter)<br>→ handle.replace()</div></div>
+  <div class="arrow h" style="left:460px;top:176px;width:44px"></div>
+  <div class="node teal center" style="left:506px;top:132px;width:190px"><div class="t">LlmAdapter.stream</div><div class="s">唯一必需方法</div></div>
+  <div class="arrow h" style="left:698px;top:176px;width:44px"></div>
+  <div class="node violet center" style="left:744px;top:132px;width:180px"><div class="t">provider HTTP</div><div class="s">DeepSeek / pi-ai / replay</div></div>
+
+  <div class="lane amber" style="left:40px;top:250px;width:1020px;height:134px"><div class="lane-t">协议义务（违反即历史不可重放）</div>
+    <div class="node tight" style="left:20px;top:26px;width:238px"><div class="t">usage 先于 finish</div><div class="s">finish 之后不得再发任何东西</div></div>
+    <div class="node tight" style="left:278px;top:26px;width:238px"><div class="t">arguments 是 raw JSON string</div><div class="s">端到端不解析</div></div>
+    <div class="node tight" style="left:536px;top:26px;width:238px"><div class="t">index 按首次出现分配</div><div class="s">同一块复用同一 index</div></div>
+    <div class="node tight" style="left:794px;top:26px;width:206px"><div class="t">错误只有两条路</div><div class="s">throw LlmError 或<br>finish{error|aborted}</div></div>
+  </div>
+
+  <div class="lane" style="left:40px;top:404px;width:1020px;height:162px"><div class="lane-t">结算：一次尝试一条耐久事件</div>
+    <div class="node tight teal" style="left:20px;top:26px;width:300px"><div class="t">成功 → assistant/message</div><div class="s">内嵌紧凑计时流 · 进入模型历史</div></div>
+    <div class="node tight amber" style="left:340px;top:26px;width:300px"><div class="t">失败/取消 → assistant/attempt</div><div class="s">仅日志 · 不进历史</div></div>
+    <div class="node tight ghost" style="left:660px;top:26px;width:340px"><div class="t">live agent/assistant-stream</div><div class="s">UI 增量唯一来源 · <b>不是 write-ahead log</b>：结算前崩溃无耐久流</div></div>
+    <div class="s" style="position:absolute;left:20px;top:96px;font-size:11.5px;color:#475468;width:980px">配套：`token-meter` 用 route-priced 锚点决定能否复用 provider usage；`llm-retry` 提供重试策略；`deepseekLlmApiExtensions` 让插件准备独立顶层字段、由官方适配器合并并在 HTTP 接受后提交投递状态。</div>
+  </div>
+  <div class="fig-no">图 14-1</div>
+</div></section>
+
+<!-- ─────────── 图 15-1 Remote API ─────────── -->
+<section class="figure" id="fig-remote-api"><div class="canvas">
+  <div class="kicker">PLATFORM SURFACES</div>
+  <h2>服务如何变成 wire API</h2>
+  <div class="sub">构建期生成描述符，运行期 Gateway 按注册表解析并调用活服务。</div>
+
+  <div class="node blue center" style="left:40px;top:130px;width:210px"><div class="t">业务服务</div><div class="s mono">extends TypertRemoteService<br>@Remote / @RemoteScope</div></div>
+  <div class="arrow h" style="left:252px;top:174px;width:44px"></div>
+  <div class="node center" style="left:298px;top:130px;width:210px"><div class="t">构建期生成</div><div class="s mono">lib/typert.host.js<br>lib/typert.remote-client.js</div></div>
+  <div class="arrow h" style="left:510px;top:174px;width:44px"></div>
+  <div class="node" style="left:556px;top:130px;width:210px"><div class="t">ctx.typertGateway</div><div class="s">描述符 ↔ 活服务<br>随 Loader 条目自动注册</div></div>
+  <div class="arrow h" style="left:768px;top:174px;width:44px"></div>
+  <div class="node teal center" style="left:814px;top:130px;width:246px"><div class="t">两条传输</div><div class="s mono">POST /api/&lt;ns&gt;/&lt;method&gt; · 一元<br>/api/remote.mux · WebSocket 流</div></div>
+
+  <div class="lane red" style="left:40px;top:286px;width:490px;height:150px"><div class="lane-t">访问控制（Gateway 强制要求）</div>
+    <div class="s" style="position:absolute;left:20px;top:26px;width:450px;font-size:12.3px;color:#475569;line-height:1.6">参数校验<b>之后</b>、lookup 解析<b>之前</b>：<br><span class="mono">ctx.remoteAccess.decide({ principal, action, resources, args })</span><br>拒绝抛 <span class="mono">remote-access/denied</span>，被拒调用<b>不激活任何 Session</b></div>
+  </div>
+  <div class="lane violet" style="left:550px;top:286px;width:510px;height:150px"><div class="lane-t">流的双向语义</div>
+    <div class="s" style="position:absolute;left:20px;top:26px;width:470px;font-size:12.3px;color:#475569;line-height:1.6">每条逻辑流带 Client→Host uplink：<span class="mono">this.ctx.invocation.uplink&lt;In&gt;()</span><br>上行<b>逐条校验</b>、下行不校验 · inbox 上限 <span class="mono">streamInboxBytes</span> 默认 262144</div>
+  </div>
+
+  <div class="lane teal" style="left:40px;top:456px;width:1020px;height:120px"><div class="lane-t">浏览器与桌面共用同一份注入表</div>
+    <div class="node tight" style="left:20px;top:24px;width:240px"><div class="t">webserver 具名路由</div><div class="s">exact → 最长 prefix → 唯一 fallback</div></div>
+    <div class="node tight" style="left:280px;top:24px;width:250px"><div class="t">collectIndexInjections</div><div class="s">global · script · script-src<br>script-preload · style · html</div></div>
+    <div class="node tight" style="left:550px;top:24px;width:220px"><div class="t">Web：renderIndex</div><div class="s">服务端渲染同一张表</div></div>
+    <div class="node tight" style="left:790px;top:24px;width:210px"><div class="t">Electron：IPC ready</div><div class="s">渲染端 applyIndexInjections</div></div>
+  </div>
+  <div class="fig-no">图 15-1</div>
+</div></section>
+
+</body></html>
